@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen>
   final List<String> _categories = ['全部', '国内', '国际', '军事', '科技', '财经'];
   final Map<String, List<NewsItem>> _newsCache = {};
   final Map<String, bool> _loadingState = {};
+  String _sortMode = '最新';
 
   @override
   void initState() {
@@ -52,6 +53,32 @@ class _HomeScreenState extends State<HomeScreen>
         backgroundColor: Colors.blue[700],
         foregroundColor: Colors.white,
         actions: [
+          // 排序切换
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _sortMode = _sortMode == '最新' ? '最热' : '最新';
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white70),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _sortMode == '最新' ? Icons.access_time : Icons.local_fire_department,
+                    size: 14, color: Colors.white,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(_sortMode, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                ],
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -106,12 +133,36 @@ class _HomeScreenState extends State<HomeScreen>
             child: ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: news.length,
-              itemBuilder: (context, index) => NewsCard(item: news[index]),
+              itemBuilder: (context, index) {
+                final sorted = _sortedNews(news);
+                return NewsCard(item: sorted[index]);
+              },
             ),
           );
         }).toList(),
       ),
     );
+  }
+
+  List<NewsItem> _sortedNews(List<NewsItem> news) {
+    final sorted = List<NewsItem>.from(news);
+    if (_sortMode == '最新') {
+      sorted.sort((a, b) => (b.pubDate ?? DateTime.fromMillisecondsSinceEpoch(0))
+          .compareTo(a.pubDate ?? DateTime.fromMillisecondsSinceEpoch(0)));
+      return sorted;
+    }
+
+    int hotScore(NewsItem item) {
+      final recency = item.pubDate == null
+          ? 0
+          : (72 - DateTime.now().difference(item.pubDate!).inHours).clamp(0, 72) as int;
+      final sourceBoost = item.source.contains('BBC') || item.source.contains('人民日报') ? 15 : 5;
+      final titleBoost = item.title.length > 28 ? 8 : 3;
+      return recency + sourceBoost + titleBoost;
+    }
+
+    sorted.sort((a, b) => hotScore(b).compareTo(hotScore(a)));
+    return sorted;
   }
 
   @override

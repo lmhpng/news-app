@@ -44,12 +44,6 @@ class NewsCard extends StatelessWidget {
                     item.source,
                     style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   ),
-                  const Spacer(),
-                  if (item.pubDate != null)
-                    Text(
-                      DateFormat('MM-dd HH:mm').format(item.pubDate!),
-                      style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                    ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -76,11 +70,30 @@ class NewsCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Text(
+                  item.pubDate != null
+                      ? _formatDate(item.pubDate!)
+                      : '时间未知',
+                  style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}分钟前';
+    if (diff.inHours < 24) return '${diff.inHours}小时前';
+    if (diff.inDays < 7) return '${diff.inDays}天前';
+    return DateFormat('MM-dd HH:mm').format(date);
   }
 
   Color _categoryColor(String category) {
@@ -94,3 +107,4 @@ class NewsCard extends StatelessWidget {
     }
   }
 }
+

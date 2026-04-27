@@ -8,18 +8,19 @@ class RssService {
   static final List<NewsSource> sources = [
     // 国内
     NewsSource(name: '人民日报', url: 'http://www.people.com.cn/rss/politics.xml', category: '国内'),
-    NewsSource(name: '澎湃新闻', url: 'https://www.thepaper.cn/rss_cn.xml', category: '国内'),
+    NewsSource(name: '国内资讯', url: 'https://news.google.com/rss/search?q=%E4%B8%AD%E5%9B%BD%E5%9B%BD%E5%86%85%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '国内'),
     // 国际
     NewsSource(name: 'BBC中文', url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', category: '国际'),
     NewsSource(name: '国际资讯', url: 'https://news.google.com/rss/search?q=%E5%9B%BD%E9%99%85%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '国际'),
     // 军事
     NewsSource(name: '军事资讯', url: 'https://news.google.com/rss/search?q=%E5%86%9B%E4%BA%8B&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '军事'),
     // 科技
-    NewsSource(name: '36氪', url: 'https://36kr.com/feed', category: '科技'),
+    NewsSource(name: 'IT之家', url: 'https://www.ithome.com/rss/', category: '科技'),
     NewsSource(name: '少数派', url: 'https://sspai.com/feed', category: '科技'),
+    NewsSource(name: '科技资讯', url: 'https://news.google.com/rss/search?q=%E7%A7%91%E6%8A%80%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '科技'),
     // 财经
-    NewsSource(name: '东方财富', url: 'https://feed.eastmoney.com/news/1/rss.xml', category: '财经'),
     NewsSource(name: '财经资讯', url: 'https://news.google.com/rss/search?q=%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
+    NewsSource(name: '股市财经', url: 'https://news.google.com/rss/search?q=%E8%82%A1%E5%B8%82%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
   ];
 
   Future<List<NewsItem>> fetchNews(String category) async {
