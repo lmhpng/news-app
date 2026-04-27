@@ -6,58 +6,73 @@ import '../models/news_source.dart';
 
 class RssService {
   static final List<NewsSource> sources = [
-    NewsSource(name: '新华社', url: 'http://www.news.cn/rss/world.xml', category: '国际'),
+    // 国内
     NewsSource(name: '人民日报', url: 'http://www.people.com.cn/rss/politics.xml', category: '国内'),
+    NewsSource(name: '澎湃新闻', url: 'https://www.thepaper.cn/rss_cn.xml', category: '国内'),
+    // 国际
     NewsSource(name: 'BBC中文', url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', category: '国际'),
-    NewsSource(name: '环球网军事', url: 'https://mil.huanqiu.com/rss/military.xml', category: '军事'),
+    NewsSource(name: '国际资讯', url: 'https://news.google.com/rss/search?q=%E5%9B%BD%E9%99%85%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '国际'),
+    // 军事
+    NewsSource(name: '军事资讯', url: 'https://news.google.com/rss/search?q=%E5%86%9B%E4%BA%8B&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '军事'),
+    // 科技
     NewsSource(name: '36氪', url: 'https://36kr.com/feed', category: '科技'),
-    NewsSource(name: '财联社', url: 'https://www.cls.cn/rss', category: '财经'),
+    NewsSource(name: '少数派', url: 'https://sspai.com/feed', category: '科技'),
+    // 财经
+    NewsSource(name: '东方财富', url: 'https://feed.eastmoney.com/news/1/rss.xml', category: '财经'),
+    NewsSource(name: '财经资讯', url: 'https://news.google.com/rss/search?q=%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
   ];
 
   Future<List<NewsItem>> fetchNews(String category) async {
-    List<NewsItem> allNews = [];
-
-    var filteredSources = category == '全部'
+    final filteredSources = category == '全部'
         ? sources
         : sources.where((s) => s.category == category).toList();
 
-    for (var source in filteredSources) {
-      try {
-        final response = await http.get(Uri.parse(source.url))
-            .timeout(const Duration(seconds: 10));
+    final results = await Future.wait(
+      filteredSources.map(_fetchFromSource),
+    );
 
-        if (response.statusCode == 200) {
-          String body = utf8.decode(response.bodyBytes);
-          final document = XmlDocument.parse(body);
-          final items = document.findAllElements('item');
-
-          for (var item in items) {
-            allNews.add(NewsItem(
-              title: item.findElements('title').first.innerText,
-              link: item.findElements('link').first.innerText,
-              description: _cleanHtml(
-                item.findElements('description').isNotEmpty
-                    ? item.findElements('description').first.innerText
-                    : ''
-              ),
-              pubDate: _parseDate(
-                item.findElements('pubDate').isNotEmpty
-                    ? item.findElements('pubDate').first.innerText
-                    : null
-              ),
-              source: source.name,
-              category: source.category,
-            ));
-          }
-        }
-      } catch (e) {
-        print('获取 ${source.name} 失败: $e');
-      }
-    }
-
+    final allNews = results.expand((items) => items).toList();
     allNews.sort((a, b) => (b.pubDate ?? DateTime.now())
         .compareTo(a.pubDate ?? DateTime.now()));
     return allNews;
+  }
+
+  Future<List<NewsItem>> _fetchFromSource(NewsSource source) async {
+    try {
+      final response = await http.get(Uri.parse(source.url))
+          .timeout(const Duration(seconds: 6));
+
+      if (response.statusCode != 200) return [];
+
+      final body = utf8.decode(response.bodyBytes, allowMalformed: true);
+      final document = XmlDocument.parse(body);
+      final items = document.findAllElements('item');
+
+      return items.map((item) {
+        return NewsItem(
+          title: item.findElements('title').isNotEmpty
+              ? item.findElements('title').first.innerText
+              : '无标题',
+          link: item.findElements('link').isNotEmpty
+              ? item.findElements('link').first.innerText
+              : '',
+          description: _cleanHtml(
+            item.findElements('description').isNotEmpty
+                ? item.findElements('description').first.innerText
+                : '',
+          ),
+          pubDate: _parseDate(
+            item.findElements('pubDate').isNotEmpty
+                ? item.findElements('pubDate').first.innerText
+                : null,
+          ),
+          source: source.name,
+          category: source.category,
+        );
+      }).where((item) => item.link.isNotEmpty).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   String _cleanHtml(String html) {
