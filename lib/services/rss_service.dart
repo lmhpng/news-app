@@ -7,24 +7,21 @@ import '../models/news_source.dart';
 class RssService {
   static final List<NewsSource> sources = [
     // 国内
-    NewsSource(name: '人民日报', url: 'http://www.people.com.cn/rss/politics.xml', category: '国内'),
-    NewsSource(name: '国内资讯', url: 'https://news.google.com/rss/search?q=%E4%B8%AD%E5%9B%BD%E5%9B%BD%E5%86%85%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '国内'),
+    NewsSource(name: '人民日报-政治', url: 'http://www.people.com.cn/rss/politics.xml', category: '国内'),
+    NewsSource(name: '人民日报-社会', url: 'http://www.people.com.cn/rss/society.xml', category: '国内'),
     // 国际
     NewsSource(name: 'BBC中文', url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', category: '国际'),
-    NewsSource(name: '国际资讯', url: 'https://news.google.com/rss/search?q=%E5%9B%BD%E9%99%85%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '国际'),
+    NewsSource(name: '人民日报-国际', url: 'http://www.people.com.cn/rss/world.xml', category: '国际'),
     // 军事
-    NewsSource(name: '军事资讯', url: 'https://news.google.com/rss/search?q=%E5%86%9B%E4%BA%8B&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '军事'),
+    NewsSource(name: '人民日报-军事', url: 'http://www.people.com.cn/rss/military.xml', category: '军事'),
     // 科技
     NewsSource(name: 'IT之家', url: 'https://www.ithome.com/rss/', category: '科技'),
     NewsSource(name: '少数派', url: 'https://sspai.com/feed', category: '科技'),
-    NewsSource(name: '科技资讯', url: 'https://news.google.com/rss/search?q=%E7%A7%91%E6%8A%80%E6%96%B0%E9%97%BB&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '科技'),
+    NewsSource(name: '人民日报-科技', url: 'http://www.people.com.cn/rss/it.xml', category: '科技'),
     // 财经
-    NewsSource(name: '财经资讯', url: 'https://news.google.com/rss/search?q=%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
-    NewsSource(name: '股市财经', url: 'https://news.google.com/rss/search?q=%E8%82%A1%E5%B8%82%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
+    NewsSource(name: '人民日报-财经', url: 'http://www.people.com.cn/rss/finance.xml', category: '财经'),
     // 吃瓜
-    NewsSource(name: '网络吃瓜', url: 'https://news.google.com/rss/search?q=%E7%BD%91%E7%BB%9C%E5%90%83%E7%93%9C+%E5%85%AB%E5%8D%A6&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '吃瓜'),
-    NewsSource(name: '娱乐八卦', url: 'https://news.google.com/rss/search?q=%E5%A8%B1%E4%B9%90%E5%85%AB%E5%8D%A6&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '吃瓜'),
-    NewsSource(name: '微博热搜', url: 'https://news.google.com/rss/search?q=%E5%BE%AE%E5%8D%9A%E7%83%AD%E6%90%9C&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '吃瓜'),
+    NewsSource(name: '人民日报-娱乐', url: 'http://www.people.com.cn/rss/ent.xml', category: '吃瓜'),
   ];
 
   Future<List<NewsItem>> fetchNews(String category) async {
