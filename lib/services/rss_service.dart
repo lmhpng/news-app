@@ -7,21 +7,23 @@ import '../models/news_source.dart';
 class RssService {
   static final List<NewsSource> sources = [
     // 国内
-    NewsSource(name: '人民日报-政治', url: 'http://www.people.com.cn/rss/politics.xml', category: '国内'),
-    NewsSource(name: '人民日报-社会', url: 'http://www.people.com.cn/rss/society.xml', category: '国内'),
+    NewsSource(name: '中国日报', url: 'https://www.chinadaily.com.cn/rss/china_rss.xml', category: '国内'),
     // 国际
     NewsSource(name: 'BBC中文', url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', category: '国际'),
-    NewsSource(name: '人民日报-国际', url: 'http://www.people.com.cn/rss/world.xml', category: '国际'),
+    NewsSource(name: '德国之声', url: 'https://feedx.net/rss/dw.xml', category: '国际'),
+    NewsSource(name: 'RFI法广', url: 'https://feedx.net/rss/rfi.xml', category: '国际'),
+    NewsSource(name: '环球时报', url: 'https://www.globaltimes.cn/rss/outbrain.xml', category: '国际'),
     // 军事
-    NewsSource(name: '人民日报-军事', url: 'http://www.people.com.cn/rss/military.xml', category: '军事'),
+    NewsSource(name: 'BBC中文', url: 'https://feeds.bbci.co.uk/zhongwen/simp/rss.xml', category: '军事'),
     // 科技
     NewsSource(name: 'IT之家', url: 'https://www.ithome.com/rss/', category: '科技'),
     NewsSource(name: '少数派', url: 'https://sspai.com/feed', category: '科技'),
-    NewsSource(name: '人民日报-科技', url: 'http://www.people.com.cn/rss/it.xml', category: '科技'),
+    NewsSource(name: 'Solidot', url: 'http://feeds.feedburner.com/solidot', category: '科技'),
     // 财经
-    NewsSource(name: '人民日报-财经', url: 'http://www.people.com.cn/rss/finance.xml', category: '财经'),
+    NewsSource(name: '中国日报财经', url: 'https://www.chinadaily.com.cn/rss/bizchina_rss.xml', category: '财经'),
     // 吃瓜
-    NewsSource(name: '人民日报-娱乐', url: 'http://www.people.com.cn/rss/ent.xml', category: '吃瓜'),
+    NewsSource(name: '中国日报娱乐', url: 'https://www.chinadaily.com.cn/rss/entertainment_rss.xml', category: '吃瓜'),
+    NewsSource(name: '豆瓣新片', url: 'https://www.douban.com/feed/review/movie', category: '吃瓜'),
   ];
 
   Future<List<NewsItem>> fetchNews(String category) async {
@@ -71,7 +73,12 @@ class RssService {
           source: source.name,
           category: source.category,
         );
-      }).where((item) => item.link.isNotEmpty).toList();
+      }).where((item) {
+        if (item.link.isEmpty) return false;
+        if (item.pubDate == null) return true;
+        final age = DateTime.now().difference(item.pubDate!).inDays;
+        return age <= 90;
+      }).toList();
     } catch (e) {
       return [];
     }
@@ -89,8 +96,21 @@ class RssService {
     if (dateStr == null) return null;
     try {
       return DateTime.parse(dateStr);
-    } catch (e) {
-      return null;
-    }
+    } catch (_) {}
+    try {
+      // RFC 822: Mon, 27 Apr 2026 04:14:30 GMT
+      final months = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,
+                      'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12};
+      final parts = dateStr.trim().split(RegExp(r'[\s,]+'));
+      if (parts.length >= 5) {
+        final day = int.parse(parts[1]);
+        final month = months[parts[2]] ?? 1;
+        final year = int.parse(parts[3]);
+        final time = parts[4].split(':');
+        return DateTime.utc(year, month, day,
+            int.parse(time[0]), int.parse(time[1]));
+      }
+    } catch (_) {}
+    return null;
   }
 }
