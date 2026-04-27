@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 import '../models/news_item.dart';
@@ -26,7 +27,8 @@ class RssService {
             .timeout(const Duration(seconds: 10));
 
         if (response.statusCode == 200) {
-          final document = XmlDocument.parse(response.body);
+          String body = utf8.decode(response.bodyBytes);
+          final document = XmlDocument.parse(body);
           final items = document.findAllElements('item');
 
           for (var item in items) {
