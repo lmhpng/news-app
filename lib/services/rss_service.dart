@@ -21,6 +21,10 @@ class RssService {
     // 财经
     NewsSource(name: '财经资讯', url: 'https://news.google.com/rss/search?q=%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
     NewsSource(name: '股市财经', url: 'https://news.google.com/rss/search?q=%E8%82%A1%E5%B8%82%E8%B4%A2%E7%BB%8F&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '财经'),
+    // 吃瓜
+    NewsSource(name: '网络吃瓜', url: 'https://news.google.com/rss/search?q=%E7%BD%91%E7%BB%9C%E5%90%83%E7%93%9C+%E5%85%AB%E5%8D%A6&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '吃瓜'),
+    NewsSource(name: '娱乐八卦', url: 'https://news.google.com/rss/search?q=%E5%A8%B1%E4%B9%90%E5%85%AB%E5%8D%A6&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '吃瓜'),
+    NewsSource(name: '微博热搜', url: 'https://news.google.com/rss/search?q=%E5%BE%AE%E5%8D%9A%E7%83%AD%E6%90%9C&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', category: '吃瓜'),
   ];
 
   Future<List<NewsItem>> fetchNews(String category) async {
